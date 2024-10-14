@@ -13,13 +13,18 @@ router.post(
   validateRequest(UserValidation.create),
   UserController.insertData
 );
-router.get('/', UserController.getAllData);
-router.get('/:id', UserController.getOneById);
+router.get('/', auth(Roles.ADMIN), UserController.getAllData);
+router.get(
+  '/:id',
+  auth(Roles.ADMIN, Roles.CUSTOMER),
+  UserController.getOneById
+);
 router.patch(
   '/:id',
+  auth(Roles.ADMIN),
   validateRequest(UserValidation.update),
   UserController.updateOne
 );
-router.patch('/:id', UserController.deleteOne);
+router.delete('/:id', auth(Roles.ADMIN), UserController.deleteOne);
 
 export const UserRouter = router;
