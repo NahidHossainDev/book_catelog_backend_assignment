@@ -1,0 +1,30 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "D:\\WebDev\\Programming_Hero_Next_Level\\Assignments\\Assignment_8\\logs\\winston\\errors\\.4e8104817959cb210e4c5cffdaaea699a42903e4-audit.json",
+    "files": [
+        {
+            "date": 1728915496245,
+            "name": "D:\\WebDev\\Programming_Hero_Next_Level\\Assignments\\Assignment_8\\logs\\winston\\errors\\phu-2024-14-10-20-error.log",
+            "hash": "0b5e6dd15a720f4b773a3505aff609edfcf9cefe3c8977c7cbb628abfda56684"
+        },
+        {
+            "date": 1728935903501,
+            "name": "D:\\WebDev\\Programming_Hero_Next_Level\\Assignments\\Assignment_8\\logs\\winston\\errors\\phu-2024-15-10-01-error.log",
+            "hash": "2483dc7a7ed3d7532ae77ba6c11ef2361ae073bec33216ad252ebc909c2a037e"
+        },
+        {
+            "date": 1728936008239,
+            "name": "D:\\WebDev\\Programming_Hero_Next_Level\\Assignments\\Assignment_8\\logs\\winston\\errors\\phu-2024-15-10-02-error.log",
+            "hash": "664d0caa1884ba2b25d9e1c1f49c61af615a6066448b2632d10fd929e51f8074"
+        },
+        {
+            "date": 1728939805617,
+            "name": "D:\\WebDev\\Programming_Hero_Next_Level\\Assignments\\Assignment_8\\logs\\winston\\errors\\phu-2024-15-10-03-error.log",
+            "hash": "be448a75df365901181ce5e646fc64e5060e4b7f0437ccf325e16280c324c6d1"
+        }
+    ],
+    "hashType": "sha256"
+}

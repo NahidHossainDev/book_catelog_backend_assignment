@@ -1,0 +1,108 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+enum Roles {
+    ADMIN
+    CUSTOMER
+}
+
+model User {
+    id              String            @id @default(uuid())
+    name            String
+    email           String            @unique
+    password        String
+    role            Roles
+    contactNo       String
+    address         String
+    profileImg      String
+    createdAt       DateTime          @default(now())
+    updatedAt       DateTime          @updatedAt
+    ReviewAndRating ReviewAndRating[]
+    Order           Order[]
+
+    @@map("users")
+}
+
+model Category {
+    id        String   @id @default(uuid())
+    title     String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    Book      Book[]
+
+    @@map("categories")
+}
+
+model Book {
+    id              String            @id @default(uuid())
+    title           String
+    author          String
+    price           Float             @default(0)
+    genre           String
+    publicationDate DateTime
+    categoryId      String
+    category        Category          @relation(fields: [categoryId], references: [id])
+    createdAt       DateTime          @default(now())
+    updatedAt       DateTime          @updatedAt
+    ReviewAndRating ReviewAndRating[]
+    OrderDetails    OrderDetails[]
+    Order           Order[]
+
+    @@map("books")
+}
+
+model ReviewAndRating {
+    id        String   @id @default(uuid())
+    review    String
+    rating    Int      @default(0)
+    userId    String
+    user      User     @relation(fields: [userId], references: [id])
+    bookId    String
+    book      Book     @relation(fields: [bookId], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("review_n_ratings")
+}
+
+model OrderDetails {
+    id        String   @id @default(uuid())
+    qunatity  Int
+    bookId    String
+    book      Book     @relation(fields: [bookId], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    Order     Order[]
+
+    @@map("order_details")
+}
+
+enum OrderStatus {
+    PENDING
+    SHIPPED
+    DELIVERED
+}
+
+model Order {
+    id             String @id @default(uuid())
+    orderDetaislId String
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
+
+    orderDetails OrderDetails @relation(fields: [orderDetaislId], references: [id])
+    status       OrderStatus
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    Book      Book?    @relation(fields: [bookId], references: [id])
+    bookId    String?
+
+    @@map("orders")
+}
