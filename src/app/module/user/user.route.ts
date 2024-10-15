@@ -14,11 +14,7 @@ router.post(
   UserController.insertData
 );
 router.get('/', auth(Roles.ADMIN), UserController.getAllData);
-router.get(
-  '/:id',
-  auth(Roles.ADMIN, Roles.CUSTOMER),
-  UserController.getOneById
-);
+router.get('/:id', auth(Roles.ADMIN), UserController.getOneById);
 router.patch(
   '/:id',
   auth(Roles.ADMIN),
