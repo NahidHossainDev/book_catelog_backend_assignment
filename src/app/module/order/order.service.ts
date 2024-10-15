@@ -1,5 +1,6 @@
 import { Order, Prisma } from '@prisma/client';
 import httpStatus from 'http-status';
+import { JwtPayload } from 'jsonwebtoken';
 import ApiError from '../../../errors/ApiError';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
@@ -39,21 +40,41 @@ const insertData = async (
   });
   const result = await prisma.order.findUnique({
     where: { id: createdOrder.id },
-    include: { OrderDetails: true, user: true },
+    include: {
+      OrderDetails: {
+        select: {
+          bookId: true,
+          book: {
+            select: {
+              title: true,
+            },
+          },
+          quantity: true,
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
   });
   return result;
 };
 
 const getAllData = async (
+  user: JwtPayload | null,
   filters: any,
   options: IPaginationOptions
 ): Promise<IGenericResponse<Order[]>> => {
   const { limit, page, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(options);
+
   const { searchTerm, ...otherFilters } = filters;
 
   const andConditions = [];
-
   if (searchTerm) {
     andConditions.push({
       OR: orderSearchableFields.map(key => ({
@@ -86,18 +107,46 @@ const getAllData = async (
   const whereConditions: Prisma.OrderWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
 
-  const result = await prisma.order.findMany({
-    where: whereConditions,
-    include: {
-      user: true,
+  let result: Order[];
+  let total = 0;
+  const include = {
+    user: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
     },
-    take: limit,
-    orderBy: {
-      [sortBy]: sortOrder,
-    },
-  });
+  };
+  if (user?.role === 'ADMIN') {
+    result = await prisma.order.findMany({
+      where: whereConditions,
+      include,
+      take: limit,
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+    });
+    total = await prisma.order.count({ where: whereConditions });
+  } else {
+    result = await prisma.order.findMany({
+      where: {
+        ...whereConditions,
+        userId: {
+          equals: user?.id,
+        },
+      },
+      include,
+      take: limit,
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+    });
+    total = await prisma.order.count({ where: whereConditions });
+  }
 
-  const total = await prisma.order.count();
+  console.log(page);
+
   return {
     data: result,
     meta: { total, page, limit },
@@ -108,8 +157,24 @@ const getOneById = async (id: string): Promise<Order | null> => {
   const result = await prisma.order.findFirst({
     where: { id },
     include: {
-      OrderDetails: true,
-      user: true,
+      OrderDetails: {
+        select: {
+          bookId: true,
+          book: {
+            select: {
+              title: true,
+            },
+          },
+          quantity: true,
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
     },
   });
   return result;
@@ -120,8 +185,19 @@ const updateOne = async (id: string, data: Partial<Order>): Promise<Order> => {
     where: { id },
     data,
     include: {
-      OrderDetails: true,
-      user: true,
+      OrderDetails: {
+        select: {
+          bookId: true,
+          quantity: true,
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
     },
   });
   return result;
@@ -131,8 +207,19 @@ const deleteOne = async (id: string): Promise<Order> => {
   const result = await prisma.order.delete({
     where: { id },
     include: {
-      OrderDetails: true,
-      user: true,
+      OrderDetails: {
+        select: {
+          bookId: true,
+          quantity: true,
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
     },
   });
   return result;

@@ -9,8 +9,6 @@ import { OrderService } from './order.service';
 
 const insertData = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
-  console.log(user);
-
   const data = await OrderService.insertData(user?.id, req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -21,9 +19,10 @@ const insertData = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllData = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user;
   const filters = pick(req.query, orderFilterableFields);
   const otherFilters = pick(req.query, paginationFields);
-  const data = await OrderService.getAllData(filters, otherFilters);
+  const data = await OrderService.getAllData(user, filters, otherFilters);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
