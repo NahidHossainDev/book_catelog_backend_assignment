@@ -4,62 +4,65 @@ import { paginationFields } from '../../../constants/pagination';
 import catchAsync from '../../../shared/catchAsync';
 import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
-import { categoryFilterableFields } from './category.constants';
-import { CategoryService } from './category.service';
+import { orderFilterableFields } from './order.constants';
+import { OrderService } from './order.service';
 
 const insertData = catchAsync(async (req: Request, res: Response) => {
-  const data = await CategoryService.insertData(req.body);
+  const user = req.user;
+  console.log(user);
+
+  const data = await OrderService.insertData(user?.id, req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     data,
-    message: 'Category created successfully!',
+    message: 'Order created successfully!',
   });
 });
 
 const getAllData = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, categoryFilterableFields);
+  const filters = pick(req.query, orderFilterableFields);
   const otherFilters = pick(req.query, paginationFields);
-  const data = await CategoryService.getAllData(filters, otherFilters);
+  const data = await OrderService.getAllData(filters, otherFilters);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     data,
-    message: 'All Category retrieved successfully!',
+    message: 'All Order retrieved successfully!',
   });
 });
 
 const getOneById = catchAsync(async (req: Request, res: Response) => {
-  const data = await CategoryService.getOneById(req.params.id);
+  const data = await OrderService.getOneById(req.params.id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     data,
-    message: 'Category get successfully!',
+    message: 'Order get successfully!',
   });
 });
 
 const updateOne = catchAsync(async (req: Request, res: Response) => {
-  const data = await CategoryService.updateOne(req.params.id, req.body);
+  const data = await OrderService.updateOne(req.params.id, req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     data,
-    message: 'Category updated successfully!',
+    message: 'Order updated successfully!',
   });
 });
 
 const deleteOne = catchAsync(async (req: Request, res: Response) => {
-  const data = await CategoryService.deleteOne(req.body);
+  const data = await OrderService.deleteOne(req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     data,
-    message: 'Category deleted successfully!',
+    message: 'Order deleted successfully!',
   });
 });
 
-export const CategoryController = {
+export const OrderController = {
   insertData,
   getAllData,
   getOneById,

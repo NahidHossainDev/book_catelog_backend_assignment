@@ -52,7 +52,6 @@ model Book {
     updatedAt       DateTime          @updatedAt
     ReviewAndRating ReviewAndRating[]
     OrderDetails    OrderDetails[]
-    Order           Order[]
 
     @@map("books")
 }
@@ -72,13 +71,16 @@ model ReviewAndRating {
 }
 
 model OrderDetails {
-    id        String   @id @default(uuid())
-    qunatity  Int
-    bookId    String
-    book      Book     @relation(fields: [bookId], references: [id])
+    id       String @id @default(uuid())
+    quantity Int
+    bookId   String
+    book     Book   @relation(fields: [bookId], references: [id])
+
+    orderId String
+    order   Order  @relation(fields: [orderId], references: [id])
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    Order     Order[]
 
     @@map("order_details")
 }
@@ -90,19 +92,13 @@ enum OrderStatus {
 }
 
 model Order {
-    id             String @id @default(uuid())
-    orderDetaislId String
-
-    userId String
-    user   User   @relation(fields: [userId], references: [id])
-
-    orderDetails OrderDetails @relation(fields: [orderDetaislId], references: [id])
-    status       OrderStatus
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    Book      Book?    @relation(fields: [bookId], references: [id])
-    bookId    String?
+    id           String         @id @default(uuid())
+    status       OrderStatus    @default(PENDING)
+    userId       String
+    user         User           @relation(fields: [userId], references: [id])
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    OrderDetails OrderDetails[]
 
     @@map("orders")
 }
